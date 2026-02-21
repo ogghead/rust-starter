@@ -72,7 +72,7 @@ Use file-per-module (mod.rs is legacy). Edition 2024 supports `mod foo;` resolvi
 - Attach `#[diagnostic(code(app::error_kind), help("..."))]` to give users actionable hints
 - Add `#[source_code]` + `#[label("...")]` fields when errors relate to source text (parsers, configs)
 - Always use `?` operator for propagation; `.into_diagnostic()` adapts foreign errors into `miette::Report`
-- NEVER use `.unwrap()`, `.expect()`, or `.get().unwrap()` — these are forbidden by lint
+- NEVER use `.unwrap()`, `.expect()`, or `.get().unwrap()` — these are denied by lint
 - Use `.ok_or_else(|| miette!("..."))` to convert `Option` to `miette::Result`
 - Use `.get()` instead of `[]` indexing, or prove bounds with `assert!` + comment
 - For output, use the `tracing` crate — `println!`/`eprintln!` are forbidden
@@ -151,3 +151,4 @@ At the beginning of each session:
 - Edition 2024 changed `unsafe_op_in_unsafe_fn` to warn-by-default; use explicit `unsafe {}` blocks inside unsafe fns
 - Clippy pedantic lint `module_name_repetitions` fires when struct name contains module name (e.g., `foo::FooBar`); this is allowed by our lint config
 - Coverage (`cargo llvm-cov`) re-compiles with instrumentation; first run is slower than plain `cargo test`
+- Restriction lints use `deny` not `forbid` because some derive macros (e.g. clap) emit `#[allow(clippy::restriction)]` which is incompatible with `forbid`
