@@ -17,14 +17,14 @@ jobs:
 
       - uses: dtolnay/rust-toolchain@stable
         with:
-          components: rustfmt, clippy
+          components: rustfmt, clippy, llvm-tools
 
       - uses: Swatinem/rust-cache@v2
 
-      - name: Install cargo-generate
+      - name: Install tools
         uses: taiki-e/install-action@v2
         with:
-          tool: cargo-generate,cargo-nextest
+          tool: cargo-generate,cargo-nextest,cargo-machete,cargo-llvm-cov
 
       - name: Generate test project
         run: |
@@ -36,9 +36,9 @@ jobs:
       - name: Verify no template remnants
         run: |
           cd /tmp/test-project
-          ! grep -r 'ai-app' --include='*.rs' --include='*.toml' --include='*.md' --include='*.yml' .
-          ! grep -r 'ai_app' --include='*.rs' --include='*.toml' --include='*.md' --include='*.yml' .
-          ! grep -r '/home/ogghead' --include='*.rs' --include='*.toml' --include='*.md' --include='*.yml' .
+          ! grep -r '{{' --include='*.rs' --include='*.toml' --include='*.md' --include='*.yml' .
+          ! grep -r 'rust-starter' --include='*.rs' --include='*.toml' --include='*.md' .
+          ! grep -r 'rust_starter' --include='*.rs' --include='*.toml' --include='*.md' .
 
       - name: Verify excluded files are absent
         run: |
@@ -48,19 +48,80 @@ jobs:
           test ! -f .github/workflows/template-test.yml
           test ! -f TEMPLATE.md
 
-      - name: Build and lint generated project
-        run: |
-          cd /tmp/test-project
-          cargo fmt -- --check
-          cargo clippy -- -D warnings
+      - name: Check formatting
+        run: cargo fmt -- --check
+        working-directory: /tmp/test-project
 
-      - name: Test generated project
-        run: |
-          cd /tmp/test-project
-          cargo test --doc
-          cargo nextest run
+      - name: Clippy
+        run: cargo clippy -- -D warnings
+        working-directory: /tmp/test-project
+
+      - name: Unused dependencies
+        run: cargo machete
+        working-directory: /tmp/test-project
+
+      - name: Doc tests
+        run: cargo test --doc
+        working-directory: /tmp/test-project
+
+      - name: Tests
+        run: cargo nextest run
+        working-directory: /tmp/test-project
+
+      - name: Coverage threshold
+        run: cargo llvm-cov nextest --fail-under-lines 60
+        working-directory: /tmp/test-project
 
       - name: Verify Cargo.lock has correct name
+        run: grep 'name = "test-project"' Cargo.lock
+        working-directory: /tmp/test-project
+
+  deny:
+    name: Dependency audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Install cargo-generate
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-generate
+
+      - name: Generate test project
         run: |
-          cd /tmp/test-project
-          grep 'name = "test-project"' Cargo.lock
+          cargo generate --path . \
+            --name test-project \
+            --define "description=A test project" \
+            --destination /tmp
+
+      - uses: EmbarkStudios/cargo-deny-action@v2
+        with:
+          manifest-path: /tmp/test-project/Cargo.toml
+
+  msrv:
+    name: MSRV (1.85)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@1.85
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Install cargo-generate
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-generate
+
+      - name: Generate test project
+        run: |
+          cargo generate --path . \
+            --name test-project \
+            --define "description=A test project" \
+            --destination /tmp
+
+      - name: Check with MSRV
+        run: cargo check
+        working-directory: /tmp/test-project
