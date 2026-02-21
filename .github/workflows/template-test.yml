@@ -1,0 +1,66 @@
+name: Template Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  generate-and-verify:
+    name: Generate & verify
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Install cargo-generate
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-generate,cargo-nextest
+
+      - name: Generate test project
+        run: |
+          cargo generate --path . \
+            --name test-project \
+            --define "description=A test project" \
+            --destination /tmp
+
+      - name: Verify no template remnants
+        run: |
+          cd /tmp/test-project
+          ! grep -r 'ai-app' --include='*.rs' --include='*.toml' --include='*.md' --include='*.yml' .
+          ! grep -r 'ai_app' --include='*.rs' --include='*.toml' --include='*.md' --include='*.yml' .
+          ! grep -r '/home/ogghead' --include='*.rs' --include='*.toml' --include='*.md' --include='*.yml' .
+
+      - name: Verify excluded files are absent
+        run: |
+          cd /tmp/test-project
+          test ! -f cargo-generate.toml
+          test ! -d .claude
+          test ! -f .github/workflows/template-test.yml
+          test ! -f TEMPLATE.md
+
+      - name: Build and lint generated project
+        run: |
+          cd /tmp/test-project
+          cargo fmt -- --check
+          cargo clippy -- -D warnings
+
+      - name: Test generated project
+        run: |
+          cd /tmp/test-project
+          cargo test --doc
+          cargo nextest run
+
+      - name: Verify Cargo.lock has correct name
+        run: |
+          cd /tmp/test-project
+          grep 'name = "test-project"' Cargo.lock
