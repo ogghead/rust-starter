@@ -30,7 +30,3 @@ cargo run
 ```sh
 cargo fmt && cargo clippy -- -D warnings && cargo test --doc && cargo nextest run
 ```
-
-## License
-
-Licensed under either of [MIT](LICENSE-MIT) or [Apache-2.0](LICENSE-APACHE) at your option.
