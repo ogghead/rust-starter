@@ -21,6 +21,7 @@ pub enum AppError {
 
 #[cfg(test)]
 mod tests {
+    // wildcard_imports is denied crate-wide; allow here for idiomatic `use super::*` in tests.
     #[allow(clippy::wildcard_imports)]
     use super::*;
 

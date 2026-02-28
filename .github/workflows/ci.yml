@@ -42,7 +42,7 @@ jobs:
       - run: cargo nextest run
 
   msrv:
-    name: MSRV (1.85)
+    name: MSRV (1.100)
     if: github.repository != 'ogghead/rust-starter'
     runs-on: ubuntu-latest
     steps:
@@ -74,10 +74,11 @@ jobs:
           tool: cargo-llvm-cov,cargo-nextest
 
       - name: Run tests with coverage
-        run: cargo llvm-cov nextest --lcov --output-path lcov.info
-
-      - name: Generate HTML report
-        run: cargo llvm-cov nextest --html --output-dir target/llvm-cov/html
+        run: |
+          cargo llvm-cov nextest \
+            --lcov --output-path lcov.info \
+            --html --output-dir target/llvm-cov/html \
+            --fail-under-lines 60
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v6
@@ -85,9 +86,6 @@ jobs:
           name: coverage-report
           path: target/llvm-cov/html/
           retention-days: 14
-
-      - name: Enforce coverage threshold
-        run: cargo llvm-cov nextest --fail-under-lines 60
 
       # Uncomment to upload to Codecov (requires CODECOV_TOKEN secret):
       # - name: Upload to Codecov

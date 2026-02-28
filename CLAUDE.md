@@ -1,6 +1,6 @@
 # {{project-name}}
 
-Rust application (edition 2024, rustc 1.92.0, stable channel).
+Rust application (edition 2024, MSRV 1.100, stable channel).
 
 ## Commands
 

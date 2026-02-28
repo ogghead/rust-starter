@@ -101,7 +101,7 @@ jobs:
           manifest-path: /tmp/test-project/Cargo.toml
 
   msrv:
-    name: MSRV (1.85)
+    name: MSRV (1.100)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6

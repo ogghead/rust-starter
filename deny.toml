@@ -1,4 +1,5 @@
 [advisories]
+version = 2
 ignore = []
 
 [licenses]
