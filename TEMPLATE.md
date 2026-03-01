@@ -11,7 +11,7 @@ A Rust application starter template with strict lints, miette errors, tracing, C
 - **Coverage**: 60% threshold enforced in CI, HTML reports as artifacts
 - **Profiles**: Optimized release (`lto`, `strip`, `panic=abort`) and dev (`split-debuginfo`)
 - **Testing**: `pretty_assertions` + `insta` snapshot testing
-- **Edition 2024** with MSRV 1.85
+- **Edition 2024** with MSRV 1.93
 
 ## Usage
 

@@ -101,12 +101,12 @@ jobs:
           manifest-path: /tmp/test-project/Cargo.toml
 
   msrv:
-    name: MSRV (1.100)
+    name: MSRV (1.93)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
 
-      - uses: dtolnay/rust-toolchain@1.100
+      - uses: dtolnay/rust-toolchain@1.93
 
       - uses: Swatinem/rust-cache@v2
 
