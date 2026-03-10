@@ -78,7 +78,7 @@ jobs:
           cargo llvm-cov nextest \
             --lcov --output-path lcov.info \
             --html --output-dir target/llvm-cov/html \
-            --fail-under-lines 60
+            --fail-under-lines 90
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v6

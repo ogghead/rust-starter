@@ -31,6 +31,16 @@ cargo run
 
 ## Before Committing
 
+Install the pre-commit hook (once, after cloning):
+
+```sh
+./scripts/install-hooks.sh
+```
+
+This runs formatting, linting, tests, and dependency auditing automatically on each commit.
+
+You can also run the checks manually:
+
 ```sh
 cargo fmt && cargo clippy -- -D warnings && cargo test --doc && cargo nextest run
 ```
