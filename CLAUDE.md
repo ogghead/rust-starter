@@ -44,11 +44,10 @@ cargo llvm-cov nextest --html --open
 
 Enforce the coverage threshold locally (matches CI):
 ```
-cargo llvm-cov nextest --fail-under-lines 60
+cargo llvm-cov nextest --fail-under-lines 90
 ```
 
-The baseline is 60% due to untestable code (miette hook closure, binary entry point).
-Raise this as the codebase grows and the ratio of testable library code increases.
+The threshold is 90% line coverage, enforced in CI.
 
 ## Architecture
 
