@@ -1,7 +1,7 @@
-//! Integration tests for rust-starter.
+//! Integration tests for {{project-name}}.
 
 #[test]
 fn test_run_succeeds() {
-    let result = rust_starter::run();
+    let result = {{crate_name}}::run();
     assert!(result.is_ok(), "run() should complete successfully");
 }

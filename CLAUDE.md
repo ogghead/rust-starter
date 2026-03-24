@@ -1,4 +1,4 @@
-# rust-starter
+# {{project-name}}
 
 Rust application (edition 2024, MSRV 1.93, stable channel).
 
@@ -59,7 +59,7 @@ src/
 tests/        # Integration tests
 ```
 
-`main.rs` is a one-line shim that calls `rust_starter::run()`. All initialization and application
+`main.rs` is a one-line shim that calls `{{crate_name}}::run()`. All initialization and application
 logic lives in the library crate so it can be tested and covered.
 
 Use file-per-module (mod.rs is legacy). Edition 2024 supports `mod foo;` resolving to `foo.rs` or `foo/mod.rs`, but prefer `foo.rs` for flat modules and `foo/` directory with named files for nested modules.
@@ -141,7 +141,7 @@ Use file-per-module (mod.rs is legacy). Edition 2024 supports `mod foo;` resolvi
 At the beginning of each session:
 1. Set rust-analyzer workspace: `rust_analyzer_set_workspace` to the project root
 2. Set code-indexer project path to the project root
-3. Check vestige for project context: `search("rust-starter")`
+3. Check vestige for project context: `search("{{project-name}}")`
 
 ## Gotchas
 

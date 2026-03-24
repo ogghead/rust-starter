@@ -1,5 +1,5 @@
-//! Binary entry point for rust-starter.
+//! Binary entry point for {{project-name}}.
 
 fn main() -> miette::Result<()> {
-    rust_starter::run()
+    {{crate_name}}::run()
 }

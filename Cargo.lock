@@ -27,6 +27,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "ai-app"
+version = "0.1.0"
+dependencies = [
+ "insta",
+ "miette",
+ "pretty_assertions",
+ "thiserror",
+ "tracing",
+ "tracing-subscriber",
+]
+
+[[package]]
 name = "anyhow"
 version = "1.0.102"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -383,18 +395,6 @@ name = "regex-syntax"
 version = "0.8.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a96887878f22d7bad8a3b6dc5b7440e0ada9a245242924394987b21cf2210a4c"
-
-[[package]]
-name = "rust-starter"
-version = "0.1.0"
-dependencies = [
- "insta",
- "miette",
- "pretty_assertions",
- "thiserror",
- "tracing",
- "tracing-subscriber",
-]
 
 [[package]]
 name = "rustc-demangle"
