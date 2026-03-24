@@ -11,8 +11,7 @@ permissions:
 jobs:
   lint:
     name: Fmt / Clippy / Machete
-    # Skip on the template repo — template-test.yml handles validation there.
-    if: github.repository != 'ogghead/rust-starter'
+
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -29,7 +28,7 @@ jobs:
 
   test:
     name: Test
-    if: github.repository != 'ogghead/rust-starter'
+
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -43,7 +42,7 @@ jobs:
 
   msrv:
     name: MSRV (1.93)
-    if: github.repository != 'ogghead/rust-starter'
+
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -53,7 +52,7 @@ jobs:
 
   deny:
     name: Dependency audit
-    if: github.repository != 'ogghead/rust-starter'
+
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -61,7 +60,7 @@ jobs:
 
   coverage:
     name: Coverage
-    if: github.repository != 'ogghead/rust-starter'
+
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6

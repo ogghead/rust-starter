@@ -1,11 +1,11 @@
 [package]
-name = "{{project-name}}"
+name = "rust-starter"
 version = "0.1.0"
 edition = "2024"
 rust-version = "1.93"
-description = "{{description}}"
+description = "A Rust application"
 license = "MIT"
-repository = "https://github.com/ogghead/{{project-name}}"
+repository = "https://github.com/ogghead/rust-starter"
 publish = false
 
 [dependencies]

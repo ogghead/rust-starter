@@ -1,4 +1,4 @@
-//! Library root for {{project-name}}.
+//! Library root for rust-starter.
 
 pub mod error;
 
@@ -22,7 +22,7 @@ pub fn run() -> miette::Result<()> {
             .try_init(),
     );
 
-    tracing::info!("{{project-name}} started");
+    tracing::info!("rust-starter started");
 
     Ok(())
 }

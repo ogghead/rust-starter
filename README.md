@@ -1,10 +1,10 @@
-# {{project-name}}
+# rust-starter
 
-<a href="https://github.com/ogghead/{{project-name}}/actions/workflows/ci.yml"><img src="https://github.com/ogghead/{{project-name}}/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
-<a href="https://github.com/ogghead/{{project-name}}"><img src="https://img.shields.io/badge/rust-1.93%2B-orange.svg?logo=rust" alt="MSRV 1.93+" /></a>
-<a href="https://github.com/ogghead/{{project-name}}/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT" /></a>
+<a href="https://github.com/ogghead/rust-starter/actions/workflows/ci.yml"><img src="https://github.com/ogghead/rust-starter/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
+<a href="https://github.com/ogghead/rust-starter"><img src="https://img.shields.io/badge/rust-1.93%2B-orange.svg?logo=rust" alt="MSRV 1.93+" /></a>
+<a href="https://github.com/ogghead/rust-starter/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT" /></a>
 
-> {{description}}
+> A Rust application starter template with strict lints, miette errors, tracing, CI, and coverage.
 
 ## Prerequisites
 
