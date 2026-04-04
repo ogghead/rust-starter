@@ -38,11 +38,28 @@ done
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 
 if grep -q 'dioxus' "$REPO_ROOT/Cargo.toml" 2>/dev/null; then
+    # Extract dioxus version from Cargo.toml (handles both 'dioxus = "0.7"' and 'dioxus = { version = "0.7", ... }')
+    DIOXUS_VERSION=$(grep -oP 'dioxus\s*=\s*(?:"([^"]+)"|\{[^}]*version\s*=\s*"([^"]+)")' "$REPO_ROOT/Cargo.toml" | grep -oP '"\K[^"]+' | head -1)
+
+    NEEDS_INSTALL=false
     if ! command -v dx &>/dev/null; then
-        echo "==> Dioxus detected in Cargo.toml — installing dioxus-cli..."
+        NEEDS_INSTALL=true
+    elif [ -n "$DIOXUS_VERSION" ]; then
+        INSTALLED_VERSION=$(dx --version 2>/dev/null | grep -oP '[0-9]+\.[0-9]+\.[0-9]+' || echo "")
+        if [ "$INSTALLED_VERSION" != "$DIOXUS_VERSION" ]; then
+            echo "==> Dioxus CLI version mismatch (installed: ${INSTALLED_VERSION:-unknown}, needed: $DIOXUS_VERSION)"
+            NEEDS_INSTALL=true
+        fi
+    fi
+
+    if [ "$NEEDS_INSTALL" = true ] && [ -n "$DIOXUS_VERSION" ]; then
+        echo "==> Dioxus detected in Cargo.toml — installing dioxus-cli v${DIOXUS_VERSION}..."
+        curl -sSL https://dioxus.dev/install.sh | sh -s -- "dx-v${DIOXUS_VERSION}"
+    elif [ "$NEEDS_INSTALL" = true ]; then
+        echo "==> Dioxus detected in Cargo.toml — installing dioxus-cli (latest)..."
         curl -sSL https://dioxus.dev/install.sh | bash
     else
-        echo "==> Dioxus detected — dx already installed."
+        echo "==> Dioxus detected — dx already installed (v${INSTALLED_VERSION})."
     fi
 fi
 
