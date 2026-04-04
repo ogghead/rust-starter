@@ -40,7 +40,7 @@ REPO_ROOT="$(git rev-parse --show-toplevel)"
 if grep -q 'dioxus' "$REPO_ROOT/Cargo.toml" 2>/dev/null; then
     if ! command -v dx &>/dev/null; then
         echo "==> Dioxus detected in Cargo.toml — installing dioxus-cli..."
-        cargo binstall --no-confirm dioxus-cli
+        curl -sSL https://dioxus.dev/install.sh | bash
     else
         echo "==> Dioxus detected — dx already installed."
     fi
