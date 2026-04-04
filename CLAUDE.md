@@ -18,15 +18,19 @@ Rust application (edition 2024, MSRV 1.93, stable channel).
 | `cargo fmt` | Format code |
 | `cargo fmt -- --check` | Check formatting without modifying |
 | `cargo doc --open` | Build and open docs |
-| `cargo deny check` | Audit dependencies |
+| `cargo deny check` | Audit dependencies (licenses, advisories, bans) |
+| `cargo machete` | Detect unused dependencies |
 | `cargo llvm-cov nextest` | Run tests with coverage (text summary) |
 | `cargo llvm-cov nextest --html --open` | Coverage report in browser |
 | `cargo llvm-cov nextest --lcov --output-path lcov.info` | Generate LCOV for editors |
+| `cargo llvm-cov nextest --fail-under-lines 90` | Enforce coverage threshold (matches CI) |
 | `cargo llvm-cov clean` | Remove coverage artifacts |
 
 ## Workflow
 
 Before committing, always run: `cargo fmt && cargo clippy -- -D warnings && cargo test`
+
+A pre-commit hook automates this — install it with `./scripts/install-hooks.sh`. The hook runs format check, clippy, tests, and optionally `cargo deny check` (if installed).
 
 ## Coverage
 
@@ -53,16 +57,67 @@ The threshold is 90% line coverage, enforced in CI.
 
 ```
 src/
-  main.rs     # Thin shim — calls lib::run()
-  lib.rs      # Library root — run() entry point and module declarations
-  error.rs    # Application error types (miette Diagnostic)
-tests/        # Integration tests
+  main.rs          # Thin shim — calls lib::run()
+  lib.rs           # Library root — run() entry point and module declarations
+  error.rs         # Application error types (miette Diagnostic)
+tests/
+  integration_test.rs  # Integration tests for run()
+scripts/
+  install-hooks.sh     # Installs git pre-commit hook
+  pre-commit           # Pre-commit hook (fmt, clippy, test, deny)
+.claude/
+  settings.json        # Claude Code session hooks
+  scripts/
+    setup.sh           # Auto-installs cargo tools at session start
+.github/
+  workflows/
+    ci.yml             # Main CI: lint, test, MSRV, deny, coverage
+    template-test.yml  # Validates cargo-generate template
+  dependabot.yml       # Weekly updates for cargo & actions
 ```
 
 `main.rs` is a one-line shim that calls `{{crate_name}}::run()`. All initialization and application
 logic lives in the library crate so it can be tested and covered.
 
 Use file-per-module (mod.rs is legacy). Edition 2024 supports `mod foo;` resolving to `foo.rs` or `foo/mod.rs`, but prefer `foo.rs` for flat modules and `foo/` directory with named files for nested modules.
+
+## Dependencies
+
+### Runtime
+- `miette` (v7, features: `fancy`) — Pretty diagnostic error reporting
+- `thiserror` (v2) — Derive `Error` trait
+- `tracing` (v0.1) — Structured logging (replaces println/eprintln)
+- `tracing-subscriber` (v0.3, features: `env-filter`) — Log filtering via `RUST_LOG`
+
+### Dev
+- `pretty_assertions` (v1) — Colored diff output for `assert_eq!`
+- `insta` (v1, features: `yaml`) — Snapshot testing
+
+## Lint Configuration
+
+Lints are configured in `Cargo.toml` under `[lints]`. Key policies:
+
+- **Unsafe code**: `forbid` — zero unsafe code allowed
+- **Clippy baseline**: `all`, `pedantic`, `nursery` at warn level
+- **Restriction lints at deny level**:
+  - Panic prevention: `unwrap_used`, `expect_used`, `panic`, `todo`, `unimplemented`, `indexing_slicing`
+  - Debug artifacts: `dbg_macro`, `print_stdout`, `print_stderr`, `use_debug`
+  - Shadowing: `shadow_reuse`, `shadow_same`, `shadow_unrelated`
+  - Type safety: `as_conversions`, `lossy_float_literal`, `arithmetic_side_effects`
+  - Documentation: `missing_docs_in_private_items`
+  - Many more (see `Cargo.toml` for full list)
+- **Allowed relaxations**: `module_name_repetitions`, `must_use_candidate`, `missing_errors_doc`, `missing_panics_doc`, `option_if_let_else`, `tests_outside_test_module`
+- **Clippy thresholds** (in `clippy.toml`): cognitive-complexity = 20, type-complexity = 250
+
+## CI Pipeline
+
+CI runs on push to main and pull requests with 5 parallel jobs:
+
+1. **Lint** — `cargo fmt --check`, `cargo clippy -- -D warnings`, `cargo machete`
+2. **Test** — `cargo test --doc` (doc tests) + `cargo nextest run` (unit/integration)
+3. **MSRV** — Verifies compilation on Rust 1.93
+4. **Deny** — `cargo deny check` for license compliance and security advisories
+5. **Coverage** — `cargo llvm-cov nextest --fail-under-lines 90` (enforces 90% threshold)
 
 ## Rust Conventions
 
@@ -97,6 +152,8 @@ Use file-per-module (mod.rs is legacy). Edition 2024 supports `mod foo;` resolvi
 - Integration tests: `tests/` directory at project root
 - Name tests descriptively: `test_parse_returns_error_on_empty_input`
 - Use `assert_eq!` / `assert_ne!` with context: `assert_eq!(result, expected, "failed for input: {input}")`
+- Use `pretty_assertions` for better diff output on complex comparisons
+- Use `insta` for snapshot testing when output is large or evolving
 - Test error cases, not just happy paths
 
 ### Edition 2024 Notes
@@ -104,6 +161,18 @@ Use file-per-module (mod.rs is legacy). Edition 2024 supports `mod foo;` resolvi
 - `unsafe_op_in_unsafe_fn` is warn-by-default
 - Lifetime capture rules changed for `impl Trait` in return position
 - `if let` temporaries have tighter scoping
+
+## Release Profile
+
+The release build is optimized for size and speed:
+- `lto = "thin"` — Link-time optimization
+- `codegen-units = 1` — Maximum optimization
+- `strip = true` — Remove debug symbols
+- `panic = "abort"` — Smaller binary (no unwinding)
+
+## Template System
+
+This repo doubles as a `cargo-generate` template. Files contain `{{project-name}}` and `{{crate_name}}` placeholders. Template config is in `cargo-generate.toml`. The `template-test.yml` CI workflow validates that generated projects compile and pass all checks.
 
 ## Using MCP Tools
 
@@ -143,6 +212,10 @@ At the beginning of each session:
 2. Set code-indexer project path to the project root
 3. Check vestige for project context: `search("{{project-name}}")`
 
+## Dependency Audit (deny.toml)
+
+Allowed licenses: MIT, Apache-2.0, BSD-2-Clause, BSD-3-Clause, ISC, Unicode-3.0, Unicode-DFS-2016. Unknown registries and git sources are denied. Wildcard dependencies are denied. Multiple versions produce warnings.
+
 ## Gotchas
 
 - `cargo clippy` and `cargo check` share the build cache; running one after the other is fast
@@ -151,3 +224,4 @@ At the beginning of each session:
 - Clippy pedantic lint `module_name_repetitions` fires when struct name contains module name (e.g., `foo::FooBar`); this is allowed by our lint config
 - Coverage (`cargo llvm-cov`) re-compiles with instrumentation; first run is slower than plain `cargo test`
 - Restriction lints use `deny` not `forbid` because some derive macros (e.g. clap) emit `#[allow(clippy::restriction)]` which is incompatible with `forbid`
+- This repo is also a `cargo-generate` template — source files contain `{{placeholder}}` syntax that gets replaced during generation
