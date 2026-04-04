@@ -34,4 +34,16 @@ for tool in "${TOOLS[@]}"; do
     fi
 done
 
+# Conditional tools — installed only when their framework/library is detected
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+
+if grep -q 'dioxus' "$REPO_ROOT/Cargo.toml" 2>/dev/null; then
+    if ! command -v dx &>/dev/null; then
+        echo "==> Dioxus detected in Cargo.toml — installing dioxus-cli..."
+        cargo binstall --no-confirm dioxus-cli
+    else
+        echo "==> Dioxus detected — dx already installed."
+    fi
+fi
+
 echo "==> Setup complete."
