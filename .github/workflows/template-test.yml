@@ -44,7 +44,6 @@ jobs:
         run: |
           cd /tmp/test-project
           test ! -f cargo-generate.toml
-          test ! -d .claude
           test ! -f .github/workflows/template-test.yml
           test ! -f TEMPLATE.md
 
@@ -84,10 +83,10 @@ jobs:
 
       - uses: dtolnay/rust-toolchain@stable
 
-      - name: Install cargo-generate
+      - name: Install tools
         uses: taiki-e/install-action@v2
         with:
-          tool: cargo-generate
+          tool: cargo-generate,cargo-deny
 
       - name: Generate test project
         run: |
@@ -96,9 +95,9 @@ jobs:
             --define "description=A test project" \
             --destination /tmp
 
-      - uses: EmbarkStudios/cargo-deny-action@v2
-        with:
-          manifest-path: /tmp/test-project/Cargo.toml
+      - name: Dependency audit
+        run: cargo deny check
+        working-directory: /tmp/test-project
 
   msrv:
     name: MSRV (1.93)

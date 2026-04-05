@@ -63,4 +63,9 @@ if grep -q 'dioxus' "$REPO_ROOT/Cargo.toml" 2>/dev/null; then
     fi
 fi
 
+# Install pre-commit hook (idempotent — uses symlink)
+echo "==> Installing pre-commit hook..."
+ln -sf "$REPO_ROOT/scripts/pre-commit" "$REPO_ROOT/.git/hooks/pre-commit"
+chmod +x "$REPO_ROOT/scripts/pre-commit"
+
 echo "==> Setup complete."
