@@ -29,7 +29,7 @@ Rust application (edition 2024, MSRV 1.93, stable channel).
 
 Before committing, always run: `cargo fmt && cargo clippy -- -D warnings && cargo test`
 
-A pre-commit hook automates this (format check, clippy, tests, and optionally `cargo deny check`). It is installed automatically by the Claude Code session start hook; for manual setup run `./scripts/install-hooks.sh`.
+A pre-commit hook automates this (format check, clippy, tests, and optionally `cargo deny check`). It is installed automatically by the Claude Code session start hook.
 
 Coverage threshold is 90% line coverage, enforced in CI. Install `cargo-llvm-cov` to check locally (the `llvm-tools` component is already in `rust-toolchain.toml`).
 
@@ -43,7 +43,6 @@ src/
 tests/
   integration_test.rs  # Integration tests for run()
 scripts/
-  install-hooks.sh     # Installs git pre-commit hook
   pre-commit           # Pre-commit hook (fmt, clippy, test, deny)
 .claude/
   settings.json        # Claude Code session hooks
