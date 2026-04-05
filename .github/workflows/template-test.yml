@@ -93,11 +93,11 @@ jobs:
           cargo generate --path . \
             --name test-project \
             --define "description=A test project" \
-            --destination /tmp
+            --destination .
 
       - uses: EmbarkStudios/cargo-deny-action@v2
         with:
-          manifest-path: /tmp/test-project/Cargo.toml
+          manifest-path: test-project/Cargo.toml
 
   msrv:
     name: MSRV (1.93)
