@@ -10,10 +10,9 @@ Rust application (edition 2024, MSRV 1.93, stable channel).
 | `cargo build` | Compile debug binary |
 | `cargo build --release` | Compile optimized binary |
 | `cargo run` | Build and run |
-| `cargo test` | Run all tests |
-| `cargo nextest run` | Run tests with better output (preferred) |
-| `cargo test -- --nocapture` | Run tests showing stdout |
-| `cargo test TEST_NAME` | Run a specific test |
+| `cargo nextest run` | Run unit/integration tests (preferred) |
+| `cargo nextest run -E 'test(name)'` | Run a specific test |
+| `cargo test --doc` | Run doc tests (nextest can't run these) |
 | `cargo clippy -- -D warnings` | Lint (warnings = errors) |
 | `cargo fmt` | Format code |
 | `cargo fmt -- --check` | Check formatting without modifying |
