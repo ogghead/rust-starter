@@ -65,6 +65,7 @@ fi
 
 # Install pre-commit hook (idempotent — uses symlink)
 echo "==> Installing pre-commit hook..."
-"$REPO_ROOT/scripts/install-hooks.sh"
+ln -sf "$REPO_ROOT/scripts/pre-commit" "$REPO_ROOT/.git/hooks/pre-commit"
+chmod +x "$REPO_ROOT/scripts/pre-commit"
 
 echo "==> Setup complete."
