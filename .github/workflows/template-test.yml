@@ -44,7 +44,6 @@ jobs:
         run: |
           cd /tmp/test-project
           test ! -f cargo-generate.toml
-          test ! -d .claude
           test ! -f .github/workflows/template-test.yml
           test ! -f TEMPLATE.md
 

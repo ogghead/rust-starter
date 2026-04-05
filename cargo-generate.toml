@@ -4,7 +4,6 @@ description = "Rust application starter with strict lints, miette errors, tracin
 ignore = [
     "cargo-generate.toml",
     "Cargo.lock",
-    ".claude/",
     ".github/workflows/template-test.yml",
     "TEMPLATE.md",
     "target/",
