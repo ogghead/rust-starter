@@ -59,7 +59,7 @@ scripts/
 
 Use file-per-module (mod.rs is legacy). Prefer `foo.rs` for flat modules and `foo/` directory with named files for nested modules.
 
-This repo doubles as a `cargo-generate` template — source files contain `{{placeholder}}` syntax that gets replaced during generation. Template config is in `cargo-generate.toml`.
+This repo doubles as a `cargo-generate` template. Template config is in `cargo-generate.toml`.
 
 ## Dependencies
 
