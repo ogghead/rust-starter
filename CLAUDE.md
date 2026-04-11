@@ -82,11 +82,10 @@ Lints are configured in `Cargo.toml` under `[lints]`. Key policies:
 - **Restriction lints at deny level**:
   - Panic prevention: `unwrap_used`, `expect_used`, `panic`, `todo`, `unimplemented`, `indexing_slicing`
   - Debug artifacts: `dbg_macro`, `print_stdout`, `print_stderr`, `use_debug`
-  - Shadowing: `shadow_reuse`, `shadow_same`, `shadow_unrelated`
+  - Shadowing: `shadow_same`, `shadow_unrelated`
   - Type safety: `as_conversions`, `lossy_float_literal`, `arithmetic_side_effects`
-  - Documentation: `missing_docs_in_private_items`
   - Many more (see `Cargo.toml` for full list)
-- **Allowed relaxations**: `module_name_repetitions`, `must_use_candidate`, `missing_errors_doc`, `missing_panics_doc`, `option_if_let_else`, `tests_outside_test_module`
+- **Allowed relaxations**: `module_name_repetitions`, `must_use_candidate`, `missing_errors_doc`, `missing_panics_doc`, `option_if_let_else`, `tests_outside_test_module`, `shadow_reuse`, `integer_division`, `str_to_string`, `missing_docs_in_private_items`
 - **Clippy thresholds** (in `clippy.toml`): cognitive-complexity = 20, type-complexity = 250
 
 ## CI Pipeline
