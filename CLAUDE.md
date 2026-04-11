@@ -33,6 +33,8 @@ A pre-commit hook automates this (format check, clippy, tests, and optionally `c
 
 Coverage threshold is 90% line coverage, enforced in CI. Install `cargo-llvm-cov` to check locally (the `llvm-tools` component is already in `rust-toolchain.toml`).
 
+When the SessionStart hook reports an open PR for the current branch, use `subscribe_pr_activity` to watch for CI failures and review comments. Investigate each event and fix issues or ask the user if the fix is ambiguous.
+
 ## Architecture
 
 ```
