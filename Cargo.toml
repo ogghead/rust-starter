@@ -66,7 +66,8 @@ print_stderr = "deny"
 use_debug = "deny"
 
 # Shadowing (deny) — flag all rebinding
-shadow_reuse = "deny"
+# shadow_reuse is allowed because `let x = x.trim()` is idiomatic
+shadow_reuse = "allow"
 shadow_same = "deny"
 shadow_unrelated = "deny"
 
@@ -80,7 +81,8 @@ error_impl_error = "deny"
 as_conversions = "deny"
 lossy_float_literal = "deny"
 float_cmp_const = "deny"
-integer_division = "deny"
+# integer_division is common and correct (e.g. index midpoint math)
+integer_division = "allow"
 arithmetic_side_effects = "deny"
 
 # Code hygiene (deny)
@@ -91,7 +93,8 @@ large_stack_frames = "deny"
 clone_on_ref_ptr = "deny"
 multiple_inherent_impl = "deny"
 string_add = "deny"
-str_to_string = "deny"
+# "literal".to_string() is idiomatic Rust
+str_to_string = "allow"
 implicit_clone = "deny"
 format_push_string = "deny"
 verbose_file_reads = "deny"
@@ -104,7 +107,8 @@ rc_mutex = "deny"
 empty_drop = "deny"
 if_then_some_else_none = "deny"
 let_underscore_must_use = "deny"
-missing_docs_in_private_items = "deny"
+# Too aggressive for a starter template; most projects don't document every private item
+missing_docs_in_private_items = "allow"
 undocumented_unsafe_blocks = "deny"
 unnecessary_safety_comment = "deny"
 unnecessary_safety_doc = "deny"

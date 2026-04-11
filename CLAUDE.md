@@ -33,6 +33,8 @@ A pre-commit hook automates this (format check, clippy, tests, and optionally `c
 
 Coverage threshold is 90% line coverage, enforced in CI. Install `cargo-llvm-cov` to check locally (the `llvm-tools` component is already in `rust-toolchain.toml`).
 
+When the SessionStart hook reports an open PR for the current branch, use `subscribe_pr_activity` to watch for CI failures and review comments. Investigate each event and fix issues or ask the user if the fix is ambiguous.
+
 ## Architecture
 
 ```
@@ -82,22 +84,20 @@ Lints are configured in `Cargo.toml` under `[lints]`. Key policies:
 - **Restriction lints at deny level**:
   - Panic prevention: `unwrap_used`, `expect_used`, `panic`, `todo`, `unimplemented`, `indexing_slicing`
   - Debug artifacts: `dbg_macro`, `print_stdout`, `print_stderr`, `use_debug`
-  - Shadowing: `shadow_reuse`, `shadow_same`, `shadow_unrelated`
+  - Shadowing: `shadow_same`, `shadow_unrelated`
   - Type safety: `as_conversions`, `lossy_float_literal`, `arithmetic_side_effects`
-  - Documentation: `missing_docs_in_private_items`
   - Many more (see `Cargo.toml` for full list)
-- **Allowed relaxations**: `module_name_repetitions`, `must_use_candidate`, `missing_errors_doc`, `missing_panics_doc`, `option_if_let_else`, `tests_outside_test_module`
+- **Allowed relaxations**: `module_name_repetitions`, `must_use_candidate`, `missing_errors_doc`, `missing_panics_doc`, `option_if_let_else`, `tests_outside_test_module`, `shadow_reuse`, `integer_division`, `str_to_string`, `missing_docs_in_private_items`
 - **Clippy thresholds** (in `clippy.toml`): cognitive-complexity = 20, type-complexity = 250
 
 ## CI Pipeline
 
-CI runs on push to main and pull requests with 5 parallel jobs:
+CI runs on push to main and pull requests with 4 parallel jobs:
 
 1. **Lint** — `cargo fmt --check`, `cargo clippy -- -D warnings`, `cargo machete`
-2. **Test** — `cargo test --doc` (doc tests) + `cargo nextest run` (unit/integration)
-3. **MSRV** — Verifies compilation on Rust 1.93
-4. **Deny** — `cargo deny check` (license compliance, security advisories; see `deny.toml` for allowed licenses)
-5. **Coverage** — `cargo llvm-cov nextest --fail-under-lines 90` (enforces 90% threshold)
+2. **MSRV** — Verifies compilation on Rust 1.93
+3. **Deny** — `cargo deny check` (license compliance, security advisories; see `deny.toml` for allowed licenses)
+4. **Test + Coverage** — `cargo test --doc` (doc tests) + `cargo llvm-cov nextest --fail-under-lines 90` (unit/integration tests with 90% coverage threshold)
 
 ## Error Handling
 

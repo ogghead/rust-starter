@@ -81,4 +81,13 @@ echo "==> Installing pre-commit hook..."
 ln -sf "$REPO_ROOT/scripts/pre-commit" "$REPO_ROOT/.git/hooks/pre-commit"
 chmod +x "$REPO_ROOT/scripts/pre-commit"
 
+# Detect open PR for current branch so Claude can subscribe to activity
+CURRENT_BRANCH=$(git branch --show-current 2>/dev/null || true)
+if [ -n "$CURRENT_BRANCH" ] && command -v gh &>/dev/null; then
+    PR_INFO=$(gh pr list --head "$CURRENT_BRANCH" --json number,url --jq '.[0] | "PR #\(.number) \(.url)"' 2>/dev/null || true)
+    if [ -n "$PR_INFO" ]; then
+        echo "==> Open $PR_INFO found for branch $CURRENT_BRANCH. Subscribe to PR activity to watch for CI failures and review comments."
+    fi
+fi
+
 echo "==> Setup complete."
