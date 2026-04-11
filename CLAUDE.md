@@ -91,13 +91,12 @@ Lints are configured in `Cargo.toml` under `[lints]`. Key policies:
 
 ## CI Pipeline
 
-CI runs on push to main and pull requests with 5 parallel jobs:
+CI runs on push to main and pull requests with 4 parallel jobs:
 
 1. **Lint** — `cargo fmt --check`, `cargo clippy -- -D warnings`, `cargo machete`
-2. **Test** — `cargo test --doc` (doc tests) + `cargo nextest run` (unit/integration)
-3. **MSRV** — Verifies compilation on Rust 1.93
-4. **Deny** — `cargo deny check` (license compliance, security advisories; see `deny.toml` for allowed licenses)
-5. **Coverage** — `cargo llvm-cov nextest --fail-under-lines 90` (enforces 90% threshold)
+2. **MSRV** — Verifies compilation on Rust 1.93
+3. **Deny** — `cargo deny check` (license compliance, security advisories; see `deny.toml` for allowed licenses)
+4. **Test + Coverage** — `cargo test --doc` (doc tests) + `cargo llvm-cov nextest --fail-under-lines 90` (unit/integration tests with 90% coverage threshold)
 
 ## Error Handling
 

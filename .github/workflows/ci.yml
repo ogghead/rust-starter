@@ -27,20 +27,6 @@ jobs:
           tool: cargo-machete
       - run: cargo machete
 
-  test:
-    name: Test
-    if: github.repository != 'ogghead/rust-starter'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      - uses: dtolnay/rust-toolchain@stable
-      - uses: Swatinem/rust-cache@v2
-      - uses: taiki-e/install-action@v2
-        with:
-          tool: cargo-nextest
-      - run: cargo test --doc
-      - run: cargo nextest run
-
   msrv:
     name: MSRV (1.93)
     if: github.repository != 'ogghead/rust-starter'
@@ -60,7 +46,7 @@ jobs:
       - uses: EmbarkStudios/cargo-deny-action@v2
 
   coverage:
-    name: Coverage
+    name: Test + Coverage
     if: github.repository != 'ogghead/rust-starter'
     runs-on: ubuntu-latest
     steps:
@@ -72,6 +58,9 @@ jobs:
       - uses: taiki-e/install-action@v2
         with:
           tool: cargo-llvm-cov,cargo-nextest
+
+      - name: Doc tests
+        run: cargo test --doc
 
       - name: Run tests with coverage
         run: |
