@@ -63,11 +63,16 @@ jobs:
         run: cargo test --doc
 
       - name: Run tests with coverage
-        run: |
-          cargo llvm-cov nextest \
-            --lcov --output-path lcov.info \
-            --html --output-dir target/llvm-cov/html \
-            --fail-under-lines 90
+        run: cargo llvm-cov nextest --no-report
+
+      - name: Emit LCOV
+        run: cargo llvm-cov report --lcov --output-path lcov.info
+
+      - name: Emit HTML
+        run: cargo llvm-cov report --html --output-dir target/llvm-cov/html
+
+      - name: Enforce coverage threshold
+        run: cargo llvm-cov report --fail-under-lines 90
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v6
