@@ -47,6 +47,23 @@ for tool in "${TOOLS[@]}"; do
     fi
 done
 
+# cargo-generate fork with `cargo generate update` baked in — pulls template
+# changes into generated projects via three-way merge. Install from our fork's
+# feature branch until the change is upstreamed.
+EXPECTED_CARGO_GENERATE_REMOTE="https://github.com/ogghead/cargo-generate"
+EXPECTED_CARGO_GENERATE_BRANCH="feat/update-subcommand"
+if ! command -v cargo-generate &>/dev/null \
+   || ! cargo generate update --help &>/dev/null; then
+    echo "==> Installing cargo-generate (fork with update subcommand)..."
+    cargo install \
+        --git "$EXPECTED_CARGO_GENERATE_REMOTE" \
+        --branch "$EXPECTED_CARGO_GENERATE_BRANCH" \
+        --locked \
+        cargo-generate
+else
+    echo "==> cargo-generate (with update subcommand) already installed."
+fi
+
 # Conditional tools — installed only when their framework/library is detected
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 
