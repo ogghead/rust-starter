@@ -4,9 +4,9 @@
 
 set -euo pipefail
 
-# Detect cargo-generate template repo (Cargo.toml has unsubstituted placeholders)
-if grep -q '[{][{]' Cargo.toml 2>/dev/null; then
-    echo "Template repo detected — skipping cargo checks."
+# Bail out early if Cargo.toml isn't parseable (e.g. template placeholders)
+if ! cargo metadata --format-version=1 --no-deps &>/dev/null; then
+    echo "Cargo.toml not parseable — skipping cargo checks."
     exit 0
 fi
 
