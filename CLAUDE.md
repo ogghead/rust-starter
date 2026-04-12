@@ -70,7 +70,7 @@ Generated projects get a `.cargo-generate.toml` file automatically, recording th
 - `cargo generate update diff` — preview the unified diff
 - `cargo generate update` — apply changes with three-way merge
 
-This requires the fork of `cargo-generate` at [ogghead/cargo-generate#feat/update-subcommand](https://github.com/ogghead/cargo-generate/tree/feat/update-subcommand), which `.claude/scripts/setup.sh` installs automatically.
+This requires the fork of `cargo-generate` at [ogghead/cargo-generate](https://github.com/ogghead/cargo-generate), which `.claude/scripts/setup.sh` installs automatically via `cargo binstall` (prebuilt binary from the fork's release).
 
 ## Dependencies
 
