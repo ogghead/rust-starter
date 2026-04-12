@@ -63,6 +63,8 @@ Use file-per-module (mod.rs is legacy). Prefer `foo.rs` for flat modules and `fo
 
 This repo doubles as a `cargo-generate` template. Template config is in `cargo-generate.toml`.
 
+To pull upstream template updates into a project generated from this starter, use [cargo-generate-update](https://github.com/ogghead/cargo-generate-update) — it tracks the template commit in `.cargo-generate.toml` and performs a three-way merge when you run `cargo generate-update update`.
+
 ## Dependencies
 
 ### Runtime
@@ -92,7 +94,7 @@ Lints are configured in `Cargo.toml` under `[lints]`. Key policies:
 
 ## CI Pipeline
 
-CI runs on push to main and pull requests with 4 parallel jobs:
+CI runs on push to main and pull requests with 4 parallel jobs (all skip in the template repo itself):
 
 1. **Lint** — `cargo fmt --check`, `cargo clippy -- -D warnings`, `cargo machete`
 2. **MSRV** — Verifies compilation on Rust 1.93

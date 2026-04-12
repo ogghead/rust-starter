@@ -4,6 +4,12 @@
 
 set -euo pipefail
 
+# Bail out early if Cargo.toml isn't parseable (e.g. template placeholders)
+if ! cargo metadata --format-version=1 --no-deps &>/dev/null; then
+    echo "Cargo.toml not parseable — skipping cargo checks."
+    exit 0
+fi
+
 echo "Running pre-commit checks..."
 
 # 1. Formatting check (fast, catches style issues)

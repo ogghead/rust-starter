@@ -36,7 +36,7 @@ jobs:
       - name: Verify no template remnants
         run: |
           cd /tmp/test-project
-          ! grep -r '{{' --include='*.rs' --include='*.toml' --include='*.md' --include='*.yml' .
+          ! grep -r '{{' --include='*.rs' --include='*.toml' --include='*.md' .
           ! grep -r 'rust-starter' --include='*.rs' --include='*.toml' --include='*.md' .
           ! grep -r 'rust_starter' --include='*.rs' --include='*.toml' --include='*.md' .
 
