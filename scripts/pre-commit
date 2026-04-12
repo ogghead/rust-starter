@@ -4,6 +4,12 @@
 
 set -euo pipefail
 
+# Detect cargo-generate template repo (Cargo.toml has unsubstituted placeholders)
+if grep -q '[{][{]' Cargo.toml 2>/dev/null; then
+    echo "Template repo detected — skipping cargo checks."
+    exit 0
+fi
+
 echo "Running pre-commit checks..."
 
 # 1. Formatting check (fast, catches style issues)
