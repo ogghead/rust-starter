@@ -8,10 +8,6 @@ ignore = [
     "TEMPLATE.md",
     "target/",
 ]
-# Copy without template processing (these files use {{ }} for non-template purposes)
-exclude = [
-    ".github/workflows/sync-template.yml",
-]
 
 [placeholders.description]
 type = "string"
