@@ -53,7 +53,9 @@ scripts/
 .github/
   workflows/
     ci.yml             # Main CI: lint, test, MSRV, deny, coverage
+    sync-template.yml  # Weekly sync of shared files from template
     template-test.yml  # Validates cargo-generate template
+  sync-template-files  # List of files to sync from the template
   dependabot.yml       # Weekly updates for cargo & actions
 ```
 
@@ -62,6 +64,8 @@ scripts/
 Use file-per-module (mod.rs is legacy). Prefer `foo.rs` for flat modules and `foo/` directory with named files for nested modules.
 
 This repo doubles as a `cargo-generate` template. Template config is in `cargo-generate.toml`.
+
+Generated repos automatically receive a **sync workflow** (`.github/workflows/sync-template.yml`) that pulls shared configuration updates from this template weekly. The file list in `.github/sync-template-files` controls which files are synced. Template placeholders (`{{project-name}}`, `{{crate_name}}`) are substituted at sync time.
 
 ## Dependencies
 
@@ -92,12 +96,14 @@ Lints are configured in `Cargo.toml` under `[lints]`. Key policies:
 
 ## CI Pipeline
 
-CI runs on push to main and pull requests with 4 parallel jobs:
+CI runs on push to main and pull requests with 4 parallel jobs (all skip in the template repo itself):
 
 1. **Lint** — `cargo fmt --check`, `cargo clippy -- -D warnings`, `cargo machete`
 2. **MSRV** — Verifies compilation on Rust 1.93
 3. **Deny** — `cargo deny check` (license compliance, security advisories; see `deny.toml` for allowed licenses)
 4. **Test + Coverage** — `cargo test --doc` (doc tests) + `cargo llvm-cov nextest --fail-under-lines 90` (unit/integration tests with 90% coverage threshold)
+
+A separate **Sync Template** workflow runs weekly (Monday 9 AM UTC) or on manual dispatch. It fetches files listed in `.github/sync-template-files` from the template repo and opens a PR if anything changed. Remove a file from the list to stop syncing it; delete the workflow to opt out entirely.
 
 ## Error Handling
 
