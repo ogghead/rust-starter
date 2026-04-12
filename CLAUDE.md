@@ -63,7 +63,14 @@ Use file-per-module (mod.rs is legacy). Prefer `foo.rs` for flat modules and `fo
 
 This repo doubles as a `cargo-generate` template. Template config is in `cargo-generate.toml`.
 
-To pull upstream template updates into a project generated from this starter, use [cargo-generate-update](https://github.com/ogghead/cargo-generate-update) — it tracks the template commit in `.cargo-generate.toml` and performs a three-way merge when you run `cargo generate-update update`.
+Generated projects get a `.cargo-generate.toml` file automatically, recording the template URL, the commit they were generated from, and the placeholder values used. To pull later template changes into a generated project:
+
+- `cargo generate update check` — are there upstream updates?
+- `cargo generate update status` — commits ahead + file-change summary
+- `cargo generate update diff` — preview the unified diff
+- `cargo generate update` — apply changes with three-way merge
+
+This requires the fork of `cargo-generate` at [ogghead/cargo-generate](https://github.com/ogghead/cargo-generate), which `.claude/scripts/setup.sh` installs automatically via `cargo binstall` (prebuilt binary from the fork's release).
 
 ## Dependencies
 
