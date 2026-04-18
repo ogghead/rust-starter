@@ -48,6 +48,21 @@ for tool in "${TOOLS[@]}"; do
     fi
 done
 
+# cargo-generate fork with `cargo generate update` baked in — pulls template
+# changes into generated projects via three-way merge. Install from our fork's
+# release (prebuilt binary via cargo-binstall) until the change is upstreamed.
+FORK_URL="https://github.com/ogghead/cargo-generate"
+if ! command -v cargo-generate &>/dev/null \
+   || ! cargo generate update --help &>/dev/null; then
+    echo "==> Installing cargo-generate (fork with update subcommand) via binstall..."
+    if ! cargo binstall --no-confirm --force --git "$FORK_URL" cargo-generate; then
+        echo "==> binstall failed, falling back to source build..."
+        cargo install --git "$FORK_URL" --locked cargo-generate
+    fi
+else
+    echo "==> cargo-generate (with update subcommand) already installed."
+fi
+
 # Install shellcheck (actionlint uses it for deeper script analysis)
 if ! command -v shellcheck &>/dev/null; then
     echo "==> Installing shellcheck..."
