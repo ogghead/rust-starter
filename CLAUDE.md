@@ -24,12 +24,14 @@ Rust application (edition 2024, MSRV 1.93, stable channel).
 | `cargo llvm-cov nextest --lcov --output-path lcov.info` | Generate LCOV for editors |
 | `cargo llvm-cov nextest --workspace --ignore-filename-regex 'src/main\.rs$' --fail-under-lines 90` | Enforce coverage threshold (matches CI) |
 | `cargo llvm-cov clean` | Remove coverage artifacts |
+| `actionlint .github/workflows/` | Lint GitHub Actions workflows |
+| `zizmor .github/workflows/` | Security audit GitHub Actions workflows |
 
 ## Workflow
 
 Before committing, always run: `cargo fmt && cargo clippy -- -D warnings && cargo test`
 
-A pre-commit hook automates this (format check, clippy, tests, and optionally `cargo deny check`). It is installed automatically by the Claude Code session start hook.
+A pre-commit hook automates this (format check, clippy, tests, and optionally `cargo deny check`, `actionlint`, and `zizmor` on workflow files). It is installed automatically by the Claude Code session start hook.
 
 Coverage threshold is 90% line coverage, enforced in CI. `main.rs` is excluded from the threshold because it is a thin shim that cannot be unit tested. Install `cargo-llvm-cov` to check locally (the `llvm-tools` component is already in `rust-toolchain.toml`).
 
@@ -126,12 +128,13 @@ Lints are configured in `Cargo.toml` under `[workspace.lints]` and inherited by 
 
 ## CI Pipeline
 
-CI runs on push to main and pull requests with 4 parallel jobs (all skip in the template repo itself):
+CI runs on push to main and pull requests with 5 parallel jobs (all skip in the template repo itself):
 
-1. **Lint** — `cargo fmt --check`, `cargo clippy -- -D warnings`, `cargo machete` (with sccache for faster builds)
-2. **MSRV** — Verifies compilation on Rust 1.93
-3. **Deny** — `cargo deny check` (license compliance, security advisories; see `deny.toml` for allowed licenses)
-4. **Test + Coverage** — `cargo test --doc` (doc tests) + `cargo llvm-cov nextest --fail-under-lines 90` (unit/integration tests with 90% coverage threshold, `main.rs` excluded)
+1. **Workflow Lint** — `actionlint` (syntax/structure) + `zizmor` (security) on all workflow YAML files
+2. **Lint** — `cargo fmt --check`, `cargo clippy -- -D warnings`, `cargo machete` (with sccache for faster builds)
+3. **MSRV** — Verifies compilation on Rust 1.93
+4. **Deny** — `cargo deny check` (license compliance, security advisories; see `deny.toml` for allowed licenses)
+5. **Test + Coverage** — `cargo test --doc` (doc tests) + `cargo llvm-cov nextest --fail-under-lines 90` (unit/integration tests with 90% coverage threshold, `main.rs` excluded)
 
 Concurrency groups cancel stale PR builds automatically to save CI minutes.
 

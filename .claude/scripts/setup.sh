@@ -32,6 +32,7 @@ TOOLS=(
     cargo-deny         # Dependency audit (licenses, advisories, bans)
     cargo-llvm-cov     # Code coverage
     cargo-machete      # Unused dependency detection
+    zizmor             # GitHub Actions security linter
 )
 
 echo "==> Installing cargo tools via cargo-binstall..."
@@ -46,6 +47,17 @@ for tool in "${TOOLS[@]}"; do
         echo "    $tool already installed."
     fi
 done
+
+# Install actionlint (Go binary — GitHub Actions workflow linter)
+if ! command -v actionlint &>/dev/null; then
+    echo "==> Installing actionlint..."
+    mkdir -p "$HOME/.local/bin"
+    bash <(curl -sSL https://raw.githubusercontent.com/rhysd/actionlint/main/.github/install-actionlint.bash) -b "$HOME/.local/bin"
+    export PATH="$HOME/.local/bin:$PATH"
+    echo "    actionlint installed."
+else
+    echo "==> actionlint already installed."
+fi
 
 # Conditional tools — installed only when their framework/library is detected
 REPO_ROOT="$(git rev-parse --show-toplevel)"

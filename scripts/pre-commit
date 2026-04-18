@@ -44,4 +44,27 @@ else
     echo "  Skipping dependency audit (cargo-deny not installed)"
 fi
 
+# 5. Workflow linting (catches CI config and security issues)
+WORKFLOW_FILES=$(git diff --cached --name-only --diff-filter=ACM -- '.github/workflows/*.yml' '.github/workflows/*.yaml' || true)
+if [ -n "$WORKFLOW_FILES" ]; then
+    if command -v actionlint &> /dev/null; then
+        echo "  Running actionlint..."
+        echo "$WORKFLOW_FILES" | xargs actionlint || {
+            echo "ERROR: actionlint found issues. Fix them and try again."
+            exit 1
+        }
+    else
+        echo "  Skipping actionlint (not installed)"
+    fi
+    if command -v zizmor &> /dev/null; then
+        echo "  Running zizmor..."
+        echo "$WORKFLOW_FILES" | xargs zizmor || {
+            echo "ERROR: zizmor found security issues. Fix them and try again."
+            exit 1
+        }
+    else
+        echo "  Skipping zizmor (not installed)"
+    fi
+fi
+
 echo "All pre-commit checks passed!"
