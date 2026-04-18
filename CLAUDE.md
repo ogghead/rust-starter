@@ -22,7 +22,7 @@ Rust application (edition 2024, MSRV 1.93, stable channel).
 | `cargo llvm-cov nextest` | Run tests with coverage (text summary) |
 | `cargo llvm-cov nextest --html --open` | Coverage report in browser |
 | `cargo llvm-cov nextest --lcov --output-path lcov.info` | Generate LCOV for editors |
-| `cargo llvm-cov nextest --fail-under-lines 90` | Enforce coverage threshold (matches CI) |
+| `cargo llvm-cov nextest --workspace --ignore-filename-regex 'src/main\.rs$' --fail-under-lines 90` | Enforce coverage threshold (matches CI) |
 | `cargo llvm-cov clean` | Remove coverage artifacts |
 
 ## Workflow
@@ -31,7 +31,7 @@ Before committing, always run: `cargo fmt && cargo clippy -- -D warnings && carg
 
 A pre-commit hook automates this (format check, clippy, tests, and optionally `cargo deny check`). It is installed automatically by the Claude Code session start hook.
 
-Coverage threshold is 90% line coverage, enforced in CI. Install `cargo-llvm-cov` to check locally (the `llvm-tools` component is already in `rust-toolchain.toml`).
+Coverage threshold is 90% line coverage, enforced in CI. `main.rs` is excluded from the threshold because it is a thin shim that cannot be unit tested. Install `cargo-llvm-cov` to check locally (the `llvm-tools` component is already in `rust-toolchain.toml`).
 
 When the SessionStart hook reports an open PR for the current branch, use `subscribe_pr_activity` to watch for CI failures and review comments. Investigate each event and fix issues or ask the user if the fix is ambiguous.
 
@@ -42,10 +42,15 @@ src/
   main.rs          # Thin shim — calls lib::run()
   lib.rs           # Library root — run() entry point and module declarations
   error.rs         # Application error types (miette Diagnostic)
+crates/            # Workspace crates (add new crates here)
 tests/
   integration_test.rs  # Integration tests for run()
 scripts/
   pre-commit           # Pre-commit hook (fmt, clippy, test, deny)
+  post-edit-check.sh   # Claude Code hook: cargo check after .rs edits
+  pre-commit-check.sh  # Claude Code hook: quality gate before git commit
+.config/
+  nextest.toml         # Test runner config (500ms slow-test timeout)
 .claude/
   settings.json        # Claude Code session hooks
   scripts/
@@ -58,6 +63,33 @@ scripts/
 ```
 
 `main.rs` is a one-line shim that calls `{{crate_name}}::run()`. All initialization and application logic lives in the library crate so it can be tested and covered.
+
+### Workspace Layout
+
+This project uses a Cargo workspace. The root `Cargo.toml` defines shared configuration
+(`workspace.package`, `workspace.dependencies`, `workspace.lints`) and the root binary crate.
+Add new library crates under `crates/`:
+
+```sh
+cargo init --lib crates/my-crate
+```
+
+Then in the new crate's `Cargo.toml`, inherit workspace config:
+
+```toml
+[package]
+name = "my-crate"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[dependencies]
+miette = { workspace = true }
+
+[lints]
+workspace = true
+```
 
 Use file-per-module (mod.rs is legacy). Prefer `foo.rs` for flat modules and `foo/` directory with named files for nested modules.
 
@@ -79,7 +111,7 @@ To pull upstream template updates into a project generated from this starter, us
 
 ## Lint Configuration
 
-Lints are configured in `Cargo.toml` under `[lints]`. Key policies:
+Lints are configured in `Cargo.toml` under `[workspace.lints]` and inherited by all crates via `[lints] workspace = true`. Key policies:
 
 - **Unsafe code**: `forbid` — zero unsafe code allowed
 - **Clippy baseline**: `all`, `pedantic`, `nursery` at warn level
@@ -96,10 +128,12 @@ Lints are configured in `Cargo.toml` under `[lints]`. Key policies:
 
 CI runs on push to main and pull requests with 4 parallel jobs (all skip in the template repo itself):
 
-1. **Lint** — `cargo fmt --check`, `cargo clippy -- -D warnings`, `cargo machete`
+1. **Lint** — `cargo fmt --check`, `cargo clippy -- -D warnings`, `cargo machete` (with sccache for faster builds)
 2. **MSRV** — Verifies compilation on Rust 1.93
 3. **Deny** — `cargo deny check` (license compliance, security advisories; see `deny.toml` for allowed licenses)
-4. **Test + Coverage** — `cargo test --doc` (doc tests) + `cargo llvm-cov nextest --fail-under-lines 90` (unit/integration tests with 90% coverage threshold)
+4. **Test + Coverage** — `cargo test --doc` (doc tests) + `cargo llvm-cov nextest --fail-under-lines 90` (unit/integration tests with 90% coverage threshold, `main.rs` excluded)
+
+Concurrency groups cancel stale PR builds automatically to save CI minutes.
 
 ## Error Handling
 

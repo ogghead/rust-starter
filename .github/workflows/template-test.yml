@@ -68,7 +68,11 @@ jobs:
         working-directory: /tmp/test-project
 
       - name: Coverage threshold
-        run: cargo llvm-cov nextest --fail-under-lines 60
+        run: |
+          cargo llvm-cov nextest \
+            --workspace \
+            --ignore-filename-regex 'src/main\.rs$' \
+            --fail-under-lines 60
         working-directory: /tmp/test-project
 
       - name: Verify Cargo.lock has correct name
