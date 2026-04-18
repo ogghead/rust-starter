@@ -32,6 +32,7 @@ TOOLS=(
     cargo-deny         # Dependency audit (licenses, advisories, bans)
     cargo-llvm-cov     # Code coverage
     cargo-machete      # Unused dependency detection
+    zizmor             # GitHub Actions security linter
 )
 
 echo "==> Installing cargo tools via cargo-binstall..."
@@ -60,6 +61,25 @@ if ! command -v cargo-generate &>/dev/null \
     fi
 else
     echo "==> cargo-generate (with update subcommand) already installed."
+fi
+
+# Install shellcheck (actionlint uses it for deeper script analysis)
+if ! command -v shellcheck &>/dev/null; then
+    echo "==> Installing shellcheck..."
+    apt-get install -y -qq shellcheck > /dev/null 2>&1 || echo "    WARNING: could not install shellcheck"
+fi
+
+# Install actionlint (Go binary — GitHub Actions workflow linter)
+export PATH="$HOME/go/bin:$HOME/.local/bin:$PATH"
+if ! command -v actionlint &>/dev/null; then
+    echo "==> Installing actionlint..."
+    if command -v go &>/dev/null; then
+        go install github.com/rhysd/actionlint/cmd/actionlint@latest
+    else
+        echo "    WARNING: Go not available, skipping actionlint install"
+    fi
+else
+    echo "==> actionlint already installed."
 fi
 
 # Conditional tools — installed only when their framework/library is detected

@@ -13,6 +13,25 @@
           }
         ]
       }
+    ],
+    "PostToolUse": [
+      {
+        "type": "command",
+        "command": "bash scripts/post-edit-check.sh",
+        "matcher": "Edit"
+      },
+      {
+        "type": "command",
+        "command": "bash scripts/post-edit-check.sh",
+        "matcher": "Write"
+      }
+    ],
+    "PreToolUse": [
+      {
+        "type": "command",
+        "command": "bash scripts/pre-commit-check.sh",
+        "matcher": "Bash"
+      }
     ]
   }
 }
