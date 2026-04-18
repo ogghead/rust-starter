@@ -30,8 +30,8 @@ if ! cargo clippy -- -D warnings 2>&1; then
 fi
 echo "Clippy OK"
 
-echo "--- cargo test ---"
-if ! cargo test 2>&1; then
+echo "--- cargo nextest run ---"
+if ! cargo nextest run 2>&1; then
   echo "Tests failed. Fix them before committing."
   exit 1
 fi

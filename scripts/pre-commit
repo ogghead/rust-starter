@@ -28,7 +28,7 @@ cargo clippy -- -D warnings || {
 
 # 3. Tests (catches regressions)
 echo "  Running tests..."
-cargo test --quiet || {
+cargo nextest run --quiet || {
     echo "ERROR: Tests failed. Fix them and try again."
     exit 1
 }
