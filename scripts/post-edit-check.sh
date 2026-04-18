@@ -9,6 +9,7 @@ INPUT=$(cat)
 
 FILE_PATH=$(echo "$INPUT" | grep -oP '"file_path"\s*:\s*"[^"]*"' | head -1 | sed 's/.*"file_path"\s*:\s*"\([^"]*\)".*/\1/')
 
+export PATH="$HOME/go/bin:$HOME/.local/bin:$PATH"
 cd "$(git rev-parse --show-toplevel)"
 
 # Lint GitHub Actions workflows when editing YAML files

@@ -24,8 +24,8 @@ Rust application (edition 2024, MSRV 1.93, stable channel).
 | `cargo llvm-cov nextest --lcov --output-path lcov.info` | Generate LCOV for editors |
 | `cargo llvm-cov nextest --workspace --ignore-filename-regex 'src/main\.rs$' --fail-under-lines 90` | Enforce coverage threshold (matches CI) |
 | `cargo llvm-cov clean` | Remove coverage artifacts |
-| `actionlint .github/workflows/` | Lint GitHub Actions workflows |
-| `zizmor .github/workflows/` | Security audit GitHub Actions workflows |
+| `actionlint .github/workflows/*.yml` | Lint GitHub Actions workflows |
+| `zizmor .github/workflows/*.yml` | Security audit GitHub Actions workflows |
 
 ## Workflow
 

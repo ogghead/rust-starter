@@ -49,12 +49,14 @@ for tool in "${TOOLS[@]}"; do
 done
 
 # Install actionlint (Go binary — GitHub Actions workflow linter)
+export PATH="$HOME/go/bin:$HOME/.local/bin:$PATH"
 if ! command -v actionlint &>/dev/null; then
     echo "==> Installing actionlint..."
-    mkdir -p "$HOME/.local/bin"
-    bash <(curl -sSL https://raw.githubusercontent.com/rhysd/actionlint/main/.github/install-actionlint.bash) -b "$HOME/.local/bin"
-    export PATH="$HOME/.local/bin:$PATH"
-    echo "    actionlint installed."
+    if command -v go &>/dev/null; then
+        go install github.com/rhysd/actionlint/cmd/actionlint@latest
+    else
+        echo "    WARNING: Go not available, skipping actionlint install"
+    fi
 else
     echo "==> actionlint already installed."
 fi

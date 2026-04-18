@@ -4,6 +4,8 @@
 
 set -euo pipefail
 
+export PATH="$HOME/go/bin:$HOME/.local/bin:$PATH"
+
 # Bail out early if Cargo.toml isn't parseable (e.g. template placeholders)
 if ! cargo metadata --format-version=1 --no-deps &>/dev/null; then
     echo "Cargo.toml not parseable — skipping cargo checks."
