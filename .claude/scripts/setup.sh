@@ -48,6 +48,12 @@ for tool in "${TOOLS[@]}"; do
     fi
 done
 
+# Install shellcheck (actionlint uses it for deeper script analysis)
+if ! command -v shellcheck &>/dev/null; then
+    echo "==> Installing shellcheck..."
+    apt-get install -y -qq shellcheck > /dev/null 2>&1 || echo "    WARNING: could not install shellcheck"
+fi
+
 # Install actionlint (Go binary — GitHub Actions workflow linter)
 export PATH="$HOME/go/bin:$HOME/.local/bin:$PATH"
 if ! command -v actionlint &>/dev/null; then
