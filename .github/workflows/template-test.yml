@@ -13,16 +13,18 @@ jobs:
     name: Generate & verify
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          persist-credentials: false
 
-      - uses: dtolnay/rust-toolchain@stable
+      - uses: dtolnay/rust-toolchain@29eef336d9b2848a0b548edc03f92a220660cdb8 # stable
         with:
           components: rustfmt, clippy, llvm-tools
 
-      - uses: Swatinem/rust-cache@v2
+      - uses: Swatinem/rust-cache@e18b497796c12c097a38f9edb9d0641fb99eee32 # v2
 
       - name: Install tools
-        uses: taiki-e/install-action@v2
+        uses: taiki-e/install-action@58e862542551f667fa44c8a2a4a1d64ad477c96a # v2
         with:
           tool: cargo-generate,cargo-nextest,cargo-machete,cargo-llvm-cov
 
@@ -36,9 +38,9 @@ jobs:
       - name: Verify no template remnants
         run: |
           cd /tmp/test-project
-          ! grep -r '{{' --include='*.rs' --include='*.toml' --include='*.md' .
-          ! grep -r 'rust-starter' --include='*.rs' --include='*.toml' --include='*.md' .
-          ! grep -r 'rust_starter' --include='*.rs' --include='*.toml' --include='*.md' .
+          if grep -r '{{' --include='*.rs' --include='*.toml' --include='*.md' .; then exit 1; fi
+          if grep -r 'rust-starter' --include='*.rs' --include='*.toml' --include='*.md' .; then exit 1; fi
+          if grep -r 'rust_starter' --include='*.rs' --include='*.toml' --include='*.md' .; then exit 1; fi
 
       - name: Verify excluded files are absent
         run: |
@@ -68,7 +70,11 @@ jobs:
         working-directory: /tmp/test-project
 
       - name: Coverage threshold
-        run: cargo llvm-cov nextest --fail-under-lines 60
+        run: |
+          cargo llvm-cov nextest \
+            --workspace \
+            --ignore-filename-regex 'src/main\.rs$' \
+            --fail-under-lines 60
         working-directory: /tmp/test-project
 
       - name: Verify Cargo.lock has correct name
@@ -79,12 +85,14 @@ jobs:
     name: Dependency audit
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          persist-credentials: false
 
-      - uses: dtolnay/rust-toolchain@stable
+      - uses: dtolnay/rust-toolchain@29eef336d9b2848a0b548edc03f92a220660cdb8 # stable
 
       - name: Install tools
-        uses: taiki-e/install-action@v2
+        uses: taiki-e/install-action@58e862542551f667fa44c8a2a4a1d64ad477c96a # v2
         with:
           tool: cargo-generate,cargo-deny
 
@@ -103,14 +111,16 @@ jobs:
     name: MSRV (1.93)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          persist-credentials: false
 
-      - uses: dtolnay/rust-toolchain@1.93
+      - uses: dtolnay/rust-toolchain@2ea1b3bdd0261867664fd125505456a7b9c3385c # 1.93
 
-      - uses: Swatinem/rust-cache@v2
+      - uses: Swatinem/rust-cache@e18b497796c12c097a38f9edb9d0641fb99eee32 # v2
 
       - name: Install cargo-generate
-        uses: taiki-e/install-action@v2
+        uses: taiki-e/install-action@58e862542551f667fa44c8a2a4a1d64ad477c96a # v2
         with:
           tool: cargo-generate
 

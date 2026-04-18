@@ -8,6 +8,9 @@ ignore = [
     "TEMPLATE.md",
     "target/",
 ]
+exclude = [
+    ".github/workflows/ci.yml",
+]
 
 [placeholders.description]
 type = "string"
