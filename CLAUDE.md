@@ -61,7 +61,7 @@ scripts/
   workflows/
     ci.yml             # Main CI: lint, test, MSRV, deny, coverage
     template-test.yml  # Validates cargo-generate template
-  dependabot.yml       # Weekly updates for cargo & actions
+  dependabot.yml       # Weekly updates for cargo dependencies
 ```
 
 `main.rs` is a one-line shim that calls `{{crate_name}}::run()`. All initialization and application logic lives in the library crate so it can be tested and covered.
