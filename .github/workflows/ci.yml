@@ -21,9 +21,9 @@ jobs:
         with:
           persist-credentials: false
       - name: Run actionlint
-        run: |
-          bash <(curl -sSL https://raw.githubusercontent.com/rhysd/actionlint/main/.github/install-actionlint.bash)
-          ./actionlint -color
+        uses: docker://rhysd/actionlint:latest
+        with:
+          args: -color
       - name: Run zizmor
         run: pipx run zizmor .github/workflows/
 
